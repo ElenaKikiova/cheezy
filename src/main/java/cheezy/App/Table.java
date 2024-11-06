@@ -6,6 +6,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.List;
 import cheezy.Cheese;
+import cheezy.Constants;
 
 public class Table extends JPanel {
 
@@ -16,7 +17,7 @@ public class Table extends JPanel {
         setLayout(new BorderLayout());
 
         // Table columns
-        String[] columnNames = {"Cheese ID", "Name", "Province", "Category", "Milk Type", "Moisture %", "Organic"};
+        String[] columnNames = Constants.TABLE_COLUMNS;
         tableModel = new DefaultTableModel(columnNames, 0);
         cheeseTable = new JTable(tableModel);
 
@@ -44,7 +45,9 @@ public class Table extends JPanel {
                     cheese.getCategoryTypeEn(),
                     cheese.getMilkTypeEn(),
                     cheese.getMoisturePercent(),
-                    cheese.isOrganic() ? "Yes" : "No"
+                    cheese.isOrganic() ? "Yes" : "No",
+                    cheese.getFlavourEn(),
+                    cheese.getFatLevel()
             };
             tableModel.addRow(rowData);
         }

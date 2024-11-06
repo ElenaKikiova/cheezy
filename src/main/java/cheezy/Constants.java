@@ -7,6 +7,17 @@ public class Constants {
     public static final String LABEL_MILK_TYPE = "Select Milk Type:";
     public static final String LABEL_CALCULATION_TYPE = "Select Calculation Type:";
 
+    public static final String[] TABLE_COLUMNS = {
+            "Cheese ID",
+            "Name",
+            "Province",
+            "Category",
+            "Milk Type",
+            "Moisture %",
+            "Organic",
+            "Flavour",
+            "Fat %"
+    };
     public static final String[] MANUFACTURER_PROV_CODES = {"All", "AB", "BC", "NS", "ON", "QC"};
     public static final String[] CATEGORY_TYPES = {"All", "Fresh Cheese",
             "Semi-soft Cheese",

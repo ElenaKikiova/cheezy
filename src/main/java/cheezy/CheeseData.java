@@ -51,8 +51,6 @@ public class CheeseData {
             fields[i] = fields[i].replace("\"", "").trim();
         }
 
-        System.out.println(fields[3]);
-
         // Parse each field from the CSV (ensure correct mapping with headers)
         String cheeseId = fields[0];  // CheeseId
         String manufacturerProvCode = fields[1];  // ManufacturerProvCode

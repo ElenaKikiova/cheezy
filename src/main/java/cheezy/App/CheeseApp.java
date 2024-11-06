@@ -16,7 +16,7 @@ public class CheeseApp extends JFrame {
 
     public CheeseApp() {
         setTitle("Cheese Filter Application");
-        setSize(700, 500);
+        setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -31,7 +31,6 @@ public class CheeseApp extends JFrame {
         resultArea.setEditable(false); // Make the result area read-only
         resultArea.setLineWrap(true);
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
-        resultPanel.add(new JLabel("Calculation Result: "), BorderLayout.NORTH);
         resultPanel.add(resultScrollPane, BorderLayout.CENTER);
 
         // Panel to hold filter and result area
