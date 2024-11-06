@@ -1,5 +1,7 @@
 package cheezy.App;
 
+import cheezy.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -17,22 +19,24 @@ public class Filters extends JPanel {
 
         // ManufacturerProvCode filter
         add(new JLabel("Select Manufacturer Province Code:"));
-        manufacturerProvCodeDropdown = new JComboBox<>(new String[]{"AB", "NS", "BC", "ON"});
+        manufacturerProvCodeDropdown = new JComboBox<>(Constants.MANUFACTURER_PROV_CODES);
         add(manufacturerProvCodeDropdown);
 
         // CategoryTypeEn filter
         add(new JLabel("Select Cheese Category:"));
-        categoryTypeDropdown = new JComboBox<>(new String[]{"Fresh Cheese", "Semi-soft Cheese", "Hard Cheese"});
+        categoryTypeDropdown = new JComboBox<>(Constants.CATEGORY_TYPES);
+        // Add more categories
         add(categoryTypeDropdown);
 
         // MilkTypeEn filter
         add(new JLabel("Select Milk Type:"));
-        milkTypeDropdown = new JComboBox<>(new String[]{"Cow", "Ewe", "Goat"});
+        milkTypeDropdown = new JComboBox<>(Constants.MILK_TYPES);
+        // Add more milk types
         add(milkTypeDropdown);
 
         // Calculation Type filter
         add(new JLabel("Select Calculation Type:"));
-        calculationTypeDropdown = new JComboBox<>(new String[]{"Average Moisture Percent", "Organic Cheese Percentage"});
+        calculationTypeDropdown = new JComboBox<>(Constants.CALCULATION_TYPES);
         add(calculationTypeDropdown);
 
         // Filter button

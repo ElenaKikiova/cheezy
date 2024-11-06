@@ -2,14 +2,17 @@ package cheezy.App;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 import cheezy.Cheese;
+import cheezy.CheeseData;
 
 public class CheeseApp extends JFrame {
 
     private Filters filterPanel;
     private Table tablePanel;
+    private JTextArea resultArea;  // New area for displaying calculation result
 
     public CheeseApp() {
         setTitle("Cheese Filter Application");
@@ -21,11 +24,36 @@ public class CheeseApp extends JFrame {
         filterPanel = new Filters();
         tablePanel = new Table();
 
-        add(filterPanel, BorderLayout.NORTH);
-        add(tablePanel, BorderLayout.CENTER);
+        // Panel for the calculation result area
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new BorderLayout());
+        resultArea = new JTextArea();
+        resultArea.setEditable(false); // Make the result area read-only
+        resultArea.setLineWrap(true);
+        JScrollPane resultScrollPane = new JScrollPane(resultArea);
+        resultPanel.add(new JLabel("Calculation Result: "), BorderLayout.NORTH);
+        resultPanel.add(resultScrollPane, BorderLayout.CENTER);
+
+        // Panel to hold filter and result area
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(filterPanel, BorderLayout.NORTH); // Filters at the top
+        topPanel.add(resultPanel, BorderLayout.SOUTH);  // Result box at the bottom
+
+        // Add components to the layout
+        add(topPanel, BorderLayout.NORTH);  // Add filter and result panel at the top
+        add(tablePanel, BorderLayout.CENTER); // Table goes in the center
+
+        // Load the cheese data from the CSV
+        loadCheeseDataFromCSV();
 
         // Add action listener for the filter button
         filterPanel.addFilterListener(e -> applyFilterAndUpdateTable());
+    }
+
+    private void loadCheeseDataFromCSV() {
+        String csvFilePath = System.getProperty("user.dir") + "/src/main/java/cheezy/resources/18.csv"; // Change the path to where your 18.csv is located
+        CheeseData.loadCheeseData(csvFilePath);
     }
 
     private void applyFilterAndUpdateTable() {
@@ -35,8 +63,8 @@ public class CheeseApp extends JFrame {
         String selectedMilkType = filterPanel.getSelectedMilkType();
         String selectedCalculation = filterPanel.getSelectedCalculation();
 
-        // Fetch filtered data (placeholder logic)
-        List<Cheese> filteredCheeses = getFilteredCheeses(selectedProvince, selectedCategory, selectedMilkType);
+        // Fetch filtered data from CheeseData (using the filter values)
+        List<Cheese> filteredCheeses = filterCheeses(selectedProvince, selectedCategory, selectedMilkType);
 
         // Update the table with filtered data
         tablePanel.updateTable(filteredCheeses);
@@ -50,21 +78,23 @@ public class CheeseApp extends JFrame {
             double organicPercentage = calculateOrganicPercentage(filteredCheeses);
             result = "Organic cheese percentage: " + organicPercentage + "%";
         }
-        JOptionPane.showMessageDialog(this, result, "Calculation Result", JOptionPane.INFORMATION_MESSAGE);
+
+        // Display the result in the text area (not a popup)
+        resultArea.setText(result);
     }
 
-    private List<Cheese> getFilteredCheeses(String province, String category, String milkType) {
-        // Placeholder data for all fields
-        List<Cheese> cheeses = new ArrayList<>();
-        cheeses.add(new Cheese("001", province, "Handmade", 38.0, "Mild", "Creamy", true,
-                category, milkType, "Pasteurized", "Natural", "Cheddar", "High"));
-        cheeses.add(new Cheese("002", province, "Industrial", 45.0, "Sharp", "Aged", false,
-                category, milkType, "Unpasteurized", "Waxed", "Gouda", "Medium"));
-        // Add more data or connect to a real data source
+    private List<Cheese> filterCheeses(String province, String category, String milkType) {
+        List<Cheese> allCheeses = CheeseData.getAllCheeses();
 
-        return cheeses;
+        // Apply filtering logic based on the selected values
+        return allCheeses.stream()
+                .filter(cheese ->
+                        (province.equals("All") || cheese.getManufacturerProvCode().equals(province)) &&
+                                (category.equals("All") || cheese.getCategoryTypeEn().equals(category)) &&
+                                (milkType.equals("All") || cheese.getMilkTypeEn().equals(milkType))
+                )
+                .collect(Collectors.toList());
     }
-
 
     private double calculateAverageMoisture(List<Cheese> cheeses) {
         return cheeses.stream().mapToDouble(Cheese::getMoisturePercent).average().orElse(0);
