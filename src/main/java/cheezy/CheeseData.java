@@ -1,7 +1,12 @@
 package cheezy;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.FSDataInputStream;
+
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +14,14 @@ import java.util.List;
 public class CheeseData {
     private static List<Cheese> allCheeses = new ArrayList<>();
 
-    public static void loadCheeseData(String path) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+    public static void loadCheeseData(String hdfsPath) {
+        Configuration configuration = new Configuration();
+        configuration.set("fs.defaultFS", "hdfs://localhost:9000");
+
+        try (FileSystem fs = FileSystem.get(configuration);
+             FSDataInputStream inputStream = fs.open(new Path(hdfsPath));
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+
             String line;
             // Skip the header row
             reader.readLine();
@@ -22,13 +33,13 @@ public class CheeseData {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading data file: " + e.getMessage());
+            System.err.println("Error reading data file from HDFS: " + e.getMessage());
         }
     }
 
     private static double parseDouble(String value) {
         if (value == null || value.isEmpty()) {
-            return 0.0; // Return the default value if the field is empty
+            return 0.0; // Return default value if the field is empty
         }
         try {
             return Double.parseDouble(value); // Try to parse the value as a double

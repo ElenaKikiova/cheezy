@@ -3,15 +3,18 @@ package cheezy.App;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
+
 import cheezy.Cheese;
 import cheezy.CheeseData;
+import cheezy.CheeseJob;
 
 public class CheeseApp extends JFrame {
 
     private final Filters filterPanel;
     private final Table tablePanel;
-    private final JTextArea resultArea;  // New area for displaying calculation result
+    private final JTextArea resultArea;
+    private static final Logger logger = Logger.getLogger(CheeseApp.class.getName()); // Initialize the logger
 
     public CheeseApp() {
         setTitle("Cheezy");
@@ -23,7 +26,7 @@ public class CheeseApp extends JFrame {
         filterPanel = new Filters();
         tablePanel = new Table();
 
-        // Panel for the calculation result area
+        // Panel for calculation result area
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BorderLayout());
         resultArea = new JTextArea();
@@ -42,15 +45,15 @@ public class CheeseApp extends JFrame {
         add(topPanel, BorderLayout.NORTH);  // Add filter and result panel at the top
         add(tablePanel, BorderLayout.CENTER); // Table goes in the center
 
-        // Load the cheese data from the csv
-        loadCheeseDataFromCSV();
+        // Load the cheese data from HDFS
+        loadCheeseDataFromHDFS();
 
         // Add action listener for filter button
         filterPanel.addFilterListener(e -> applyFilterAndUpdateTable());
     }
 
-    private void loadCheeseDataFromCSV() {
-        String csvFilePath = System.getProperty("user.dir") + "/src/main/java/cheezy/resources/18.csv"; // Change the path to where your 18.csv is located
+    private void loadCheeseDataFromHDFS() {
+        String csvFilePath = "/user/elena.kikiova/cheezy/resources/18.csv";
         CheeseData.loadCheeseData(csvFilePath);
         List<Cheese> allCheeses = CheeseData.getAllCheeses();
         tablePanel.updateTable(allCheeses);
@@ -61,48 +64,34 @@ public class CheeseApp extends JFrame {
         String selectedProvince = filterPanel.getSelectedProvince();
         String selectedCategory = filterPanel.getSelectedCategory();
         String selectedMilkType = filterPanel.getSelectedMilkType();
-        String selectedCalculation = filterPanel.getSelectedCalculation();
 
-        // Fetch filtered data from CheeseData (using the filter values)
-        List<Cheese> filteredCheeses = filterCheeses(selectedProvince, selectedCategory, selectedMilkType);
+        // Log the selected filters to ensure they are being passed correctly
+        logger.info("Selected Province: " + selectedProvince);
+        logger.info("Selected Category: " + selectedCategory);
+        logger.info("Selected Milk Type: " + selectedMilkType);
 
-        // Update the table with filtered data
-        tablePanel.updateTable(filteredCheeses);
+        // Run the Hadoop job with the selected filters
+        try {
+            String inputPath = "/user/elena.kikiova/cheezy/resources/18.csv"; // HDFS path
+            logger.info("Running Cheese Job with inputPath: " + inputPath);
 
-        // Perform and display calculation if needed
-        String result;
-        if ("Average Moisture Percent".equals(selectedCalculation)) {
-            double avgMoisture = calculateAverageMoisture(filteredCheeses);
-            result = "Average moisture: " + avgMoisture + "%";
-        } else {
-            double organicPercentage = calculateOrganicPercentage(filteredCheeses);
-            result = "Organic cheese percentage: " + organicPercentage + "%";
+            List<Cheese> cheeseResults = CheeseJob.runCheeseJob(inputPath, selectedProvince, selectedCategory, selectedMilkType);
+
+            // Log the size of the result list to ensure the job returned results
+            if (cheeseResults != null) {
+                logger.info("Cheese job finished. Results size: " + cheeseResults.size());
+            } else {
+                logger.warning("No results returned from the cheese job.");
+            }
+
+            // Update the table with the results from the job
+            tablePanel.updateTable(cheeseResults);
+
+        } catch (Exception e) {
+            // Log the exception to understand what went wrong
+            logger.severe("Error while running the cheese job: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // Display the result in the text area (not a popup)
-        resultArea.setText(result);
-    }
-
-    private List<Cheese> filterCheeses(String province, String category, String milkType) {
-        List<Cheese> allCheeses = CheeseData.getAllCheeses();
-
-        // Apply filtering logic based on the selected values
-        return allCheeses.stream()
-                .filter(cheese ->
-                        (province.equals("All") || cheese.getManufacturerProvCode().equals(province)) &&
-                                (category.equals("All") || cheese.getCategoryTypeEn().equals(category)) &&
-                                (milkType.equals("All") || cheese.getMilkTypeEn().equals(milkType))
-                )
-                .collect(Collectors.toList());
-    }
-
-    private double calculateAverageMoisture(List<Cheese> cheeses) {
-        return cheeses.stream().mapToDouble(Cheese::getMoisturePercent).average().orElse(0);
-    }
-
-    private double calculateOrganicPercentage(List<Cheese> cheeses) {
-        long organicCount = cheeses.stream().filter(Cheese::isOrganic).count();
-        return (double) organicCount / cheeses.size() * 100;
     }
 
     public static void main(String[] args) {
