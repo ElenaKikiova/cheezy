@@ -2,7 +2,6 @@ package cheezy.App;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 import cheezy.Cheese;
@@ -10,12 +9,12 @@ import cheezy.CheeseData;
 
 public class CheeseApp extends JFrame {
 
-    private Filters filterPanel;
-    private Table tablePanel;
-    private JTextArea resultArea;  // New area for displaying calculation result
+    private final Filters filterPanel;
+    private final Table tablePanel;
+    private final JTextArea resultArea;  // New area for displaying calculation result
 
     public CheeseApp() {
-        setTitle("Cheese Filter Application");
+        setTitle("Cheezy");
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -28,7 +27,7 @@ public class CheeseApp extends JFrame {
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BorderLayout());
         resultArea = new JTextArea();
-        resultArea.setEditable(false); // Make the result area read-only
+        resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
         resultPanel.add(resultScrollPane, BorderLayout.CENTER);
@@ -43,16 +42,18 @@ public class CheeseApp extends JFrame {
         add(topPanel, BorderLayout.NORTH);  // Add filter and result panel at the top
         add(tablePanel, BorderLayout.CENTER); // Table goes in the center
 
-        // Load the cheese data from the CSV
+        // Load the cheese data from the csv
         loadCheeseDataFromCSV();
 
-        // Add action listener for the filter button
+        // Add action listener for filter button
         filterPanel.addFilterListener(e -> applyFilterAndUpdateTable());
     }
 
     private void loadCheeseDataFromCSV() {
         String csvFilePath = System.getProperty("user.dir") + "/src/main/java/cheezy/resources/18.csv"; // Change the path to where your 18.csv is located
         CheeseData.loadCheeseData(csvFilePath);
+        List<Cheese> allCheeses = CheeseData.getAllCheeses();
+        tablePanel.updateTable(allCheeses);
     }
 
     private void applyFilterAndUpdateTable() {

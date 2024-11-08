@@ -8,11 +8,11 @@ import java.awt.event.ActionListener;
 
 public class Filters extends JPanel {
 
-    private JComboBox<String> manufacturerProvCodeDropdown;
-    private JComboBox<String> categoryTypeDropdown;
-    private JComboBox<String> milkTypeDropdown;
-    private JComboBox<String> calculationTypeDropdown;
-    private JButton filterButton;
+    private final JComboBox<String> manufacturerProvCodeDropdown;
+    private final JComboBox<String> categoryTypeDropdown;
+    private final JComboBox<String> milkTypeDropdown;
+    private final JComboBox<String> calculationTypeDropdown;
+    private final JButton filterButton;
 
     public Filters() {
         setLayout(new GridLayout(5, 2, 10, 10));
@@ -39,8 +39,7 @@ public class Filters extends JPanel {
         calculationTypeDropdown = new JComboBox<>(Constants.CALCULATION_TYPES);
         add(calculationTypeDropdown);
 
-        // Filter button
-        filterButton = new JButton("Filter");
+        filterButton = new JButton("Apply filters");
         add(filterButton);
     }
 

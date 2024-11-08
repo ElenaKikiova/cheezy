@@ -12,8 +12,8 @@ public class CheeseData {
     public static void loadCheeseData(String path) {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
-            // Skip the header row in the CSV (if it's there)
-            reader.readLine(); // Assuming first line is header
+            // Skip the header row
+            reader.readLine();
 
             while ((line = reader.readLine()) != null) {
                 Cheese cheese = parseCheese(line);
@@ -38,7 +38,7 @@ public class CheeseData {
     }
 
     private static Cheese parseCheese(String line) {
-        // Split CSV line by comma (adjust if your file uses tabs or another delimiter)
+        // Split CSV line by comma
         String[] fields = line.split(",");
         if (fields.length < 13) {
             return null; // Not enough data to create a Cheese object
@@ -51,24 +51,22 @@ public class CheeseData {
             fields[i] = fields[i].replace("\"", "").trim();
         }
 
-        // Parse each field from the CSV (ensure correct mapping with headers)
-        String cheeseId = fields[0];  // CheeseId
-        String manufacturerProvCode = fields[1];  // ManufacturerProvCode
-        String manufacturingTypeEn = fields[2];  // ManufacturingTypeEn
-        double moisturePercent = parseDouble(fields[3]);  // MoisturePercent
-        String flavourEn = fields[4];  // FlavourEn
-        String characteristicsEn = fields[5];  // CharacteristicsEn
-        boolean isOrganic = fields[6].equals("1");  // Organic (assuming '1' means organic)
-        String categoryTypeEn = fields[7];  // CategoryTypeEn
-        String milkTypeEn = fields[8];  // MilkTypeEn
-        String milkTreatmentTypeEn = fields[9];  // MilkTreatmentTypeEn
-        String rindTypeEn = fields[10];  // RindTypeEn
-        String cheeseName = fields[11];  // CheeseName
-        String fatLevel = fields[12];  // FatLevel
+        // Parse each field from the CSV
+        String cheeseId = fields[0];
+        String manufacturerProvCode = fields[1];
+        String manufacturingTypeEn = fields[2];
+        double moisturePercent = parseDouble(fields[3]);
+        String flavourEn = fields[4];
+        String characteristicsEn = fields[5];
+        boolean isOrganic = fields[6].equals("1");
+        String categoryTypeEn = fields[7];
+        String milkTypeEn = fields[8];
+        String milkTreatmentTypeEn = fields[9];
+        String rindTypeEn = fields[10];
+        String cheeseName = fields[11];
+        String fatLevel = fields[12];
 
-        System.out.println(cheeseId);
-
-        // Return the Cheese object
+        // Return the Cheese
         return new Cheese(
                 cheeseId, manufacturerProvCode, manufacturingTypeEn,
                 moisturePercent, flavourEn, characteristicsEn,

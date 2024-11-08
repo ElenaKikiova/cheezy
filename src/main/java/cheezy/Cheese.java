@@ -51,38 +51,4 @@ public class Cheese {
     public String getCheeseName() { return cheeseName; }
     public String getFatLevel() { return fatLevel; }
 
-    // Setters
-    public void setCheeseId(String cheeseId) { this.cheeseId = cheeseId; }
-    public void setManufacturerProvCode(String manufacturerProvCode) { this.manufacturerProvCode = manufacturerProvCode; }
-    public void setManufacturingTypeEn(String manufacturingTypeEn) { this.manufacturingTypeEn = manufacturingTypeEn; }
-    public void setMoisturePercent(double moisturePercent) { this.moisturePercent = moisturePercent; }
-    public void setFlavourEn(String flavourEn) { this.flavourEn = flavourEn; }
-    public void setCharacteristicsEn(String characteristicsEn) { this.characteristicsEn = characteristicsEn; }
-    public void setOrganic(boolean organic) { isOrganic = organic; }
-    public void setCategoryTypeEn(String categoryTypeEn) { this.categoryTypeEn = categoryTypeEn; }
-    public void setMilkTypeEn(String milkTypeEn) { this.milkTypeEn = milkTypeEn; }
-    public void setMilkTreatmentTypeEn(String milkTreatmentTypeEn) { this.milkTreatmentTypeEn = milkTreatmentTypeEn; }
-    public void setRindTypeEn(String rindTypeEn) { this.rindTypeEn = rindTypeEn; }
-    public void setCheeseName(String cheeseName) { this.cheeseName = cheeseName; }
-    public void setFatLevel(String fatLevel) { this.fatLevel = fatLevel; }
-
-    // toString method
-    @Override
-    public String toString() {
-        return "Cheese{" +
-                "cheeseId='" + cheeseId + '\'' +
-                ", manufacturerProvCode='" + manufacturerProvCode + '\'' +
-                ", manufacturingTypeEn='" + manufacturingTypeEn + '\'' +
-                ", moisturePercent=" + moisturePercent +
-                ", flavourEn='" + flavourEn + '\'' +
-                ", characteristicsEn='" + characteristicsEn + '\'' +
-                ", isOrganic=" + isOrganic +
-                ", categoryTypeEn='" + categoryTypeEn + '\'' +
-                ", milkTypeEn='" + milkTypeEn + '\'' +
-                ", milkTreatmentTypeEn='" + milkTreatmentTypeEn + '\'' +
-                ", rindTypeEn='" + rindTypeEn + '\'' +
-                ", cheeseName='" + cheeseName + '\'' +
-                ", fatLevel='" + fatLevel + '\'' +
-                '}';
-    }
 }

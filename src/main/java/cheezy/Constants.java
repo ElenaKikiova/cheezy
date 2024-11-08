@@ -2,11 +2,6 @@ package cheezy;
 
 public class Constants {
 
-    public static final String LABEL_MANUFACTURER_PROV_CODE = "Select Manufacturer Province Code:";
-    public static final String LABEL_CATEGORY_TYPE = "Select Cheese Category:";
-    public static final String LABEL_MILK_TYPE = "Select Milk Type:";
-    public static final String LABEL_CALCULATION_TYPE = "Select Calculation Type:";
-
     public static final String[] TABLE_COLUMNS = {
             "Cheese ID",
             "Name",
