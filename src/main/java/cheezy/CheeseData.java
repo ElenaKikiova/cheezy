@@ -68,8 +68,6 @@ public class CheeseData {
             if(fields.length < 13){
                 return null;
             }
-
-            System.out.println("-");
             // Clean and handle missing values
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i] == null || fields[i].isEmpty()) {
@@ -112,7 +110,7 @@ public class CheeseData {
     public static List<Cheese> getAllCheeses() {
         return allCheeses;
     }
-    public static List<Cheese> readFilteredCheesesFromHDFS(String outputPath) throws IOException {
+    public static String readCalculationResultFromHDFS(String outputPath) throws IOException {
         List<Cheese> filteredCheeses = new ArrayList<>();
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://localhost:9000");
@@ -123,14 +121,21 @@ public class CheeseData {
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             String line;
+            String calculation = "";
+            String result = "";
             while ((line = reader.readLine()) != null) {
-                Cheese cheese = parseCheese(line);  // Reuse the parsing function from CheeseData
-                if (cheese != null) {
-                    filteredCheeses.add(cheese);
-                }
+                // Split the line into key and value (tab-separated)
+                String[] keyValue = line.split("\t");
+                calculation = keyValue[0]; // The key
+                result = keyValue[1]; // The value
             }
+            return calculation + ": " + (result.isEmpty() ? "0%" : result);
+
         }
-        return filteredCheeses;
+        catch (IOException e){
+            System.err.println(e);
+        }
+        return "";
     }
 
 

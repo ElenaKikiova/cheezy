@@ -4,10 +4,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static cheezy.CheeseData.parseDouble;
 
 public class CheeseReducer extends Reducer<Text, Text, Text, Text> {
 
@@ -21,7 +17,7 @@ public class CheeseReducer extends Reducer<Text, Text, Text, Text> {
         for (Text value : values) {
             String[] data = value.toString().split(",");
             double moisture = CheeseData.parseDouble(data[0]);
-            boolean isOrganic = data[1].equals("1");
+            boolean isOrganic = data[1].equals("true");
 
             totalMoisture += moisture;
             if (isOrganic) organicCount++;
@@ -31,13 +27,15 @@ public class CheeseReducer extends Reducer<Text, Text, Text, Text> {
 
         // Depending on the calculation type, output different results
         String calculationType = context.getConfiguration().get("calculation");
-        if (calculationType.equals("Average Moisture Percent")) {
+        System.out.println(calculationType);
+        if (calculationType.equals(Constants.CALCULATION_TYPES[0])) {
+            System.out.println(totalMoisture + " divided by " + totalCount);
             double avgMoisture = totalMoisture / totalCount;
-            System.out.println(key + " => total mositure" + totalMoisture + "; total count" + totalCount + "; avg " + avgMoisture);
-            context.write(key, new Text("Average Moisture Percent: " + avgMoisture));
-        } else if (calculationType.equals("organicPercentage")) {
+            context.write(new Text(Constants.CALCULATION_TYPES[0]), new Text(String.format("%.1f", avgMoisture) + "%"));
+        } else if (calculationType.equals(Constants.CALCULATION_TYPES[1])) {
+            System.out.println(organicCount + " divided by " + totalCount);
             double organicPercentage = (organicCount / (double) totalCount) * 100;
-            context.write(key, new Text("Organic Percentage: " + organicPercentage));
+            context.write(new Text(Constants.CALCULATION_TYPES[1]), new Text(String.format("%.1f", organicPercentage) + "%"));
         }
     }
 }

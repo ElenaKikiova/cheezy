@@ -66,11 +66,10 @@ public class CheeseApp extends JFrame {
         String selectedCalculation = filterPanel.getSelectedCalculation();
 
         try {
-            List<Cheese> cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
+            String cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
 
             if (cheeseResults != null && !cheeseResults.isEmpty()) {
-                System.out.println("Cheese job finished. Results size: " + cheeseResults.size());
-                tablePanel.updateTable(cheeseResults);  // Update table with results
+                resultArea.setText("Calculation: " + cheeseResults);
             } else {
                 JOptionPane.showMessageDialog(this, "No results found for the selected filters.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }

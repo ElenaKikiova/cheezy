@@ -19,7 +19,7 @@ public class CheeseJob {
         logger.setLevel(Level.ERROR);
     }
 
-    public static List<Cheese> runCheeseJob(String inputPath, String province, String category, String milkType, String calculation) throws Exception {
+    public static String runCheeseJob(String inputPath, String province, String category, String milkType, String calculation) throws Exception {
 
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://localhost:9000");
@@ -47,10 +47,8 @@ public class CheeseJob {
         FileOutputFormat.setOutputPath(job, outputPath);
         outputPath.getFileSystem(conf).delete(outputPath, true);  // Clear any existing output
 
-        // Run the job and wait for completion
         if (job.waitForCompletion(true)) {
-            // If job is successful, retrieve results and load them into memory
-            return CheeseData.readFilteredCheesesFromHDFS(outputPathStr);  // Implement this to read filtered results
+            return CheeseData.readCalculationResultFromHDFS(outputPathStr);
         } else {
             throw new Exception("Hadoop job failed.");
         }

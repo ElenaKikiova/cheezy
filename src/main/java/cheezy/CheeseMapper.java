@@ -2,25 +2,47 @@ package cheezy;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-
 import java.io.IOException;
-
-import static cheezy.CheeseData.parseDouble;
+import java.util.Objects;
 
 public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
+
+    private String filterProvince;
+    private String filterCategory;
+    private String filterMilkType;
+
+    @Override
+    protected void setup(Context context) {
+        // Get the filter values from the job's configuration
+        filterProvince = context.getConfiguration().get("filter.province");
+        filterCategory = context.getConfiguration().get("filter.category");
+        filterMilkType = context.getConfiguration().get("filter.milkType");
+    }
+
+    protected boolean equals(String value1, String value2){
+        if(Objects.equals(value2, "All")) return true;
+        if(value1 == null || value2 == null || value1.isEmpty() || value2.isEmpty()) return false;
+        else return value1.equals(value2);
+    }
 
     @Override
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
 
+        // Parse the cheese data
         Cheese cheese = CheeseData.parseCheese(line);
 
-        System.out.println(line);
-        System.out.println(cheese.getCategoryTypeEn());
-        System.out.println("-----");
+        // Apply filtering logic based on the provided filters
+        boolean matchesProvince = equals(cheese.getManufacturerProvCode(), filterProvince);
+        boolean matchesCategory = equals(cheese.getCategoryTypeEn(), filterCategory);
+        boolean matchesMilkType = equals(cheese.getMilkTypeEn(), filterMilkType);
 
-        context.write(
-                new Text(cheese.getManufacturerProvCode() + "," + cheese.getCategoryTypeEn() + "," + cheese.getMilkTypeEn()),
-                new Text(cheese.getMoisturePercent() + "," + (cheese.isOrganic() ? "1" : "0")));
+        // If all filters match, write the record to the context
+        if (matchesProvince && matchesCategory && matchesMilkType) {
+            context.write(
+                    new Text("calc"),
+                    new Text(cheese.getMoisturePercent() + "," + cheese.isOrganic())
+            );
+        }
     }
 }
