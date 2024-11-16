@@ -117,5 +117,11 @@
             <artifactId>hadoop-mapreduce-client-hs-plugins</artifactId>
             <version>2.7.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.8</version>
+        </dependency>
     </dependencies>
 </project>

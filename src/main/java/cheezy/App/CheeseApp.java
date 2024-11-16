@@ -3,18 +3,19 @@ package cheezy.App;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.logging.Logger;
 
 import cheezy.Cheese;
 import cheezy.CheeseData;
 import cheezy.CheeseJob;
+import org.apache.log4j.BasicConfigurator;
 
 public class CheeseApp extends JFrame {
 
     private final Filters filterPanel;
     private final Table tablePanel;
     private final JTextArea resultArea;
-    private static final Logger logger = Logger.getLogger(CheeseApp.class.getName()); // Initialize the logger
+
+    private String csvFilePath = "/user/elena.kikiova/cheezy/resources/18.csv";
 
     public CheeseApp() {
         setTitle("Cheezy");
@@ -53,48 +54,35 @@ public class CheeseApp extends JFrame {
     }
 
     private void loadCheeseDataFromHDFS() {
-        String csvFilePath = "/user/elena.kikiova/cheezy/resources/18.csv";
         CheeseData.loadCheeseData(csvFilePath);
         List<Cheese> allCheeses = CheeseData.getAllCheeses();
         tablePanel.updateTable(allCheeses);
     }
 
     private void applyFilterAndUpdateTable() {
-        // Get selected filter values
         String selectedProvince = filterPanel.getSelectedProvince();
         String selectedCategory = filterPanel.getSelectedCategory();
         String selectedMilkType = filterPanel.getSelectedMilkType();
+        String selectedCalculation = filterPanel.getSelectedCalculation();
 
-        // Log the selected filters to ensure they are being passed correctly
-        logger.info("Selected Province: " + selectedProvince);
-        logger.info("Selected Category: " + selectedCategory);
-        logger.info("Selected Milk Type: " + selectedMilkType);
-
-        // Run the Hadoop job with the selected filters
         try {
-            String inputPath = "/user/elena.kikiova/cheezy/resources/18.csv"; // HDFS path
-            logger.info("Running Cheese Job with inputPath: " + inputPath);
+            List<Cheese> cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
 
-            List<Cheese> cheeseResults = CheeseJob.runCheeseJob(inputPath, selectedProvince, selectedCategory, selectedMilkType);
-
-            // Log the size of the result list to ensure the job returned results
-            if (cheeseResults != null) {
-                logger.info("Cheese job finished. Results size: " + cheeseResults.size());
+            if (cheeseResults != null && !cheeseResults.isEmpty()) {
+                System.out.println("Cheese job finished. Results size: " + cheeseResults.size());
+                tablePanel.updateTable(cheeseResults);  // Update table with results
             } else {
-                logger.warning("No results returned from the cheese job.");
+                JOptionPane.showMessageDialog(this, "No results found for the selected filters.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
-
-            // Update the table with the results from the job
-            tablePanel.updateTable(cheeseResults);
-
         } catch (Exception e) {
-            // Log the exception to understand what went wrong
-            logger.severe("Error while running the cheese job: " + e.getMessage());
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error running the job: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+
     public static void main(String[] args) {
+        BasicConfigurator.configure();
         SwingUtilities.invokeLater(() -> {
             CheeseApp app = new CheeseApp();
             app.setVisible(true);
