@@ -7,8 +7,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import java.util.List;
-import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
@@ -22,9 +20,9 @@ public class CheeseJob {
     public static String runCheeseJob(String inputPath, String province, String category, String milkType, String calculation) throws Exception {
 
         Configuration conf = new Configuration();
-        conf.set("fs.defaultFS", "hdfs://localhost:9000");
+        conf.set("fs.defaultFS", Constants.HDFS_ADDRESS);
 
-        // Set filtering parameters
+        // Set filters
         conf.set("filter.province", province);
         conf.set("filter.category", category);
         conf.set("filter.milkType", milkType);
@@ -45,7 +43,7 @@ public class CheeseJob {
         String outputPathStr = "/user/elena.kikiova/output/cheese-filtered";
         Path outputPath = new Path(outputPathStr);
         FileOutputFormat.setOutputPath(job, outputPath);
-        outputPath.getFileSystem(conf).delete(outputPath, true);  // Clear any existing output
+        outputPath.getFileSystem(conf).delete(outputPath, true);
 
         if (job.waitForCompletion(true)) {
             return CheeseData.readCalculationResultFromHDFS(outputPathStr);

@@ -13,7 +13,6 @@ public class CheeseReducer extends Reducer<Text, Text, Text, Text> {
         int organicCount = 0;
         int totalCount = 0;
 
-        // Iterate through all the values and aggregate
         for (Text value : values) {
             String[] data = value.toString().split(",");
             double moisture = CheeseData.parseDouble(data[0]);
@@ -24,8 +23,7 @@ public class CheeseReducer extends Reducer<Text, Text, Text, Text> {
             totalCount++;
         }
 
-
-        // Depending on the calculation type, output different results
+        // Calculate Moisture or Organic percentage
         String calculationType = context.getConfiguration().get("calculation");
         System.out.println(calculationType);
         if (calculationType.equals(Constants.CALCULATION_TYPES[0])) {

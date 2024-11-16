@@ -16,18 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheeseData {
-    private static List<Cheese> allCheeses = new ArrayList<>();
+    private static final List<Cheese> allCheeses = new ArrayList<>();
 
     public static void loadCheeseData(String hdfsPath) {
         Configuration configuration = new Configuration();
-        configuration.set("fs.defaultFS", "hdfs://localhost:9000");
+        configuration.set("fs.defaultFS", Constants.HDFS_ADDRESS);
 
         try (FileSystem fs = FileSystem.get(configuration);
              FSDataInputStream inputStream = fs.open(new Path(hdfsPath));
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             String line;
-            // Skip the header row
+            // Skip header row
             reader.readLine();
 
             while ((line = reader.readLine()) != null) {
@@ -43,14 +43,15 @@ public class CheeseData {
     }
 
     public static double parseDouble(String value) {
+        // If value si empty or null or not parsable to double, return 0.0
         if (value == null || value.isEmpty()) {
-            return 0.0; // Return default value if the field is empty
+            return 0.0;
         }
         try {
             value = value.replace("\"", "").trim();
-            return Double.parseDouble(value); // Try to parse the value as a double
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            return 0.0; // Return default value if parsing fails
+            return 0.0;
         }
     }
 
@@ -61,7 +62,6 @@ public class CheeseData {
                 .withQuoteChar('"')
                 .build();
 
-        // Parse line
         try {
             String[] fields = parser.parseLine(line);
 

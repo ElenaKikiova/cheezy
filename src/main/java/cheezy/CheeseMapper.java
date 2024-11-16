@@ -13,7 +13,7 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
 
     @Override
     protected void setup(Context context) {
-        // Get the filter values from the job's configuration
+        // Get the filters
         filterProvince = context.getConfiguration().get("filter.province");
         filterCategory = context.getConfiguration().get("filter.category");
         filterMilkType = context.getConfiguration().get("filter.milkType");
@@ -32,12 +32,11 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         // Parse the cheese data
         Cheese cheese = CheeseData.parseCheese(line);
 
-        // Apply filtering logic based on the provided filters
+        // Apply filters
         boolean matchesProvince = equals(cheese.getManufacturerProvCode(), filterProvince);
         boolean matchesCategory = equals(cheese.getCategoryTypeEn(), filterCategory);
         boolean matchesMilkType = equals(cheese.getMilkTypeEn(), filterMilkType);
 
-        // If all filters match, write the record to the context
         if (matchesProvince && matchesCategory && matchesMilkType) {
             context.write(
                     new Text("calc"),

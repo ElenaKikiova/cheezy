@@ -23,11 +23,9 @@ public class CheeseApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Initialize and add components
         filterPanel = new Filters();
         tablePanel = new Table();
 
-        // Panel for calculation result area
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BorderLayout());
         resultArea = new JTextArea();
@@ -36,20 +34,16 @@ public class CheeseApp extends JFrame {
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
         resultPanel.add(resultScrollPane, BorderLayout.CENTER);
 
-        // Panel to hold filter and result area
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
-        topPanel.add(filterPanel, BorderLayout.NORTH); // Filters at the top
-        topPanel.add(resultPanel, BorderLayout.SOUTH);  // Result box at the bottom
+        topPanel.add(filterPanel, BorderLayout.NORTH);
+        topPanel.add(resultPanel, BorderLayout.SOUTH);
 
-        // Add components to the layout
-        add(topPanel, BorderLayout.NORTH);  // Add filter and result panel at the top
-        add(tablePanel, BorderLayout.CENTER); // Table goes in the center
+        add(topPanel, BorderLayout.NORTH);
+        add(tablePanel, BorderLayout.CENTER);
 
-        // Load the cheese data from HDFS
         loadCheeseDataFromHDFS();
 
-        // Add action listener for filter button
         filterPanel.addFilterListener(e -> applyFilterAndUpdateTable());
     }
 
@@ -68,18 +62,17 @@ public class CheeseApp extends JFrame {
         try {
             String cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
 
-            if (cheeseResults != null && !cheeseResults.isEmpty()) {
+            if (!cheeseResults.isEmpty()) {
                 resultArea.setText("Calculation: " + cheeseResults);
             } else {
                 JOptionPane.showMessageDialog(this, "No results found for the selected filters.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e);
             JOptionPane.showMessageDialog(this, "Error running the job: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
+    
     public static void main(String[] args) {
         BasicConfigurator.configure();
         SwingUtilities.invokeLater(() -> {

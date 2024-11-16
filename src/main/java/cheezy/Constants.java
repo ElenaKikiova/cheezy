@@ -2,6 +2,8 @@ package cheezy;
 
 public class Constants {
 
+    public static final String HDFS_ADDRESS = "hdfs://localhost:9000";
+
     public static final String[] TABLE_COLUMNS = {
             "Cheese ID",
             "Name",
