@@ -1,6 +1,12 @@
 hdfs dfs -rm /user/elena.kikiova/cheezy/resources/18.csv
 
-hdfs dfs -put /Users/elena.kikiova/Documents/pu/cheezy/src/main/java/cheezy/resources/18.csv /user/elena.kikiova/cheezy/resources/
+hdfs dfs -put /users/elena.kikiova/Documents/pu/cheezy/src/main/java/cheezy/resources/18.csv /user/elena.kikiova/cheezy/resources/
+
+hdfs dfs -mkdir
+
+
+ hadoop fs -get /user/elena.kikiova/output/calculation-r-00000 ~/output-copy
+  hadoop fs -get /user/elena.kikiova/output/filteredCheese-m-00000 ~/output-cheese-copy
 
 hadoop-daemon.sh stop datanode
 
@@ -11,4 +17,3 @@ jps
 $HADOOP_HOME/sbin/stop-dfs.sh
 $HADOOP_HOME/sbin/start-dfs.sh
 
-        conf.set("fs.defaultFS", "hdfs://localhost:9000");

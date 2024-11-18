@@ -6,15 +6,20 @@ public class Constants {
 
     public static final String[] TABLE_COLUMNS = {
             "Cheese ID",
-            "Name",
-            "Province",
-            "Category",
-            "Milk Type",
-            "Moisture %",
-            "Organic",
+            "Cheese Name",
+            "Province Code",
+            "Manufacturing Type",
+            "Moisture Percentage",
             "Flavour",
-            "Fat %"
+            "Characteristics",
+            "Organic (Yes/No)",
+            "Category Type",
+            "Milk Type",
+            "Milk Treatment Type",
+            "Rind Type",
+            "Fat Level"
     };
+
     public static final String[] MANUFACTURER_PROV_CODES = {"All", "AB", "BC", "NS", "ON", "QC"};
     public static final String[] CATEGORY_TYPES = {"All", "Fresh Cheese",
             "Semi-soft Cheese",

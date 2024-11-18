@@ -6,7 +6,8 @@ import java.util.List;
 
 import cheezy.Cheese;
 import cheezy.CheeseData;
-import cheezy.CheeseJob;
+import cheezy.hadoop.CheeseJob;
+import cheezy.CheeseResult;
 import org.apache.log4j.BasicConfigurator;
 
 public class CheeseApp extends JFrame {
@@ -60,19 +61,25 @@ public class CheeseApp extends JFrame {
         String selectedCalculation = filterPanel.getSelectedCalculation();
 
         try {
-            String cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
+            CheeseResult cheeseResults = CheeseJob.runCheeseJob(csvFilePath, selectedProvince, selectedCategory, selectedMilkType, selectedCalculation);
+            String calculationResults = cheeseResults.getCalculationResult();
+            List<Cheese> filteredCheese = cheeseResults.getFilteredCheese();
 
-            if (!cheeseResults.isEmpty()) {
-                resultArea.setText("Calculation: " + cheeseResults);
+            if (!calculationResults.isEmpty()) {
+                resultArea.setText("Calculation: " + calculationResults);
+
+                System.out.println(filteredCheese.size());
+                tablePanel.updateTable(filteredCheese);
             } else {
                 JOptionPane.showMessageDialog(this, "No results found for the selected filters.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
             System.err.println(e);
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error running the job: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public static void main(String[] args) {
         BasicConfigurator.configure();
         SwingUtilities.invokeLater(() -> {

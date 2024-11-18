@@ -1,19 +1,19 @@
 package cheezy;
 
 public class Cheese {
-    private String cheeseId;
-    private String manufacturerProvCode;
-    private String manufacturingTypeEn;
-    private double moisturePercent;
-    private String flavourEn;
-    private String characteristicsEn;
-    private boolean isOrganic;
-    private String categoryTypeEn;
-    private String milkTypeEn;
-    private String milkTreatmentTypeEn;
-    private String rindTypeEn;
-    private String cheeseName;
-    private String fatLevel;
+    private final String cheeseId;
+    private final String manufacturerProvCode;
+    private final String manufacturingTypeEn;
+    private final double moisturePercent;
+    private final String flavourEn;
+    private final String characteristicsEn;
+    private final boolean isOrganic;
+    private final String categoryTypeEn;
+    private final String milkTypeEn;
+    private final String milkTreatmentTypeEn;
+    private final String rindTypeEn;
+    private final String cheeseName;
+    private final String fatLevel;
 
     // Constructor
     public Cheese(String cheeseId, String manufacturerProvCode, String manufacturingTypeEn,
@@ -34,6 +34,22 @@ public class Cheese {
         this.rindTypeEn = rindTypeEn;
         this.cheeseName = cheeseName;
         this.fatLevel = fatLevel;
+    }
+
+    public String cheeseToString(){
+        return cheeseId + "," +
+                manufacturerProvCode + "," +
+                manufacturingTypeEn + "," +
+                moisturePercent + "," +
+                flavourEn + "," +
+                characteristicsEn + "," +
+                (isOrganic ? "Yes" : "No") + "," +
+                categoryTypeEn + "," +
+                milkTypeEn + "," +
+                milkTreatmentTypeEn + "," +
+                rindTypeEn + "," +
+                cheeseName + "," +
+                fatLevel;
     }
 
     // Getters

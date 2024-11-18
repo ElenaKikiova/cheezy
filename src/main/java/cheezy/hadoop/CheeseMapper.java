@@ -1,7 +1,11 @@
-package cheezy;
+package cheezy.hadoop;
 
+import cheezy.Cheese;
+import cheezy.CheeseData;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -10,6 +14,7 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
     private String filterProvince;
     private String filterCategory;
     private String filterMilkType;
+    private MultipleOutputs<Text, Text> multipleOutputs;
 
     @Override
     protected void setup(Context context) {
@@ -17,6 +22,9 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         filterProvince = context.getConfiguration().get("filter.province");
         filterCategory = context.getConfiguration().get("filter.category");
         filterMilkType = context.getConfiguration().get("filter.milkType");
+
+        // Initialize MultipleOutputs
+        multipleOutputs = new MultipleOutputs<>(context);
     }
 
     protected boolean equals(String value1, String value2){
@@ -38,9 +46,13 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         boolean matchesMilkType = equals(cheese.getMilkTypeEn(), filterMilkType);
 
         if (matchesProvince && matchesCategory && matchesMilkType) {
-            context.write(
-                    new Text("calc"),
-                    new Text(cheese.getMoisturePercent() + "," + cheese.isOrganic())
+            context.write(new Text("calculation"), new Text(cheese.getMoisturePercent() + "," + cheese.isOrganic()));
+
+            // Write to "filter" output
+            multipleOutputs.write(
+                    "filteredCheese",
+                    new Text("filter"),
+                    new Text(cheese.cheeseToString())
             );
         }
     }

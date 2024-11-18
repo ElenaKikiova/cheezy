@@ -1,5 +1,6 @@
-package cheezy;
+package cheezy.hadoop;
 
+import cheezy.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
@@ -7,17 +8,12 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class CheeseJob {
-    private static final Logger logger = Logger.getLogger(CheeseJob.class);
 
-    public static void main(String[] args) {
-        logger.setLevel(Level.ERROR);
-    }
-
-    public static String runCheeseJob(String inputPath, String province, String category, String milkType, String calculation) throws Exception {
+    public static CheeseResult runCheeseJob(String inputPath, String province, String category, String milkType, String calculation) throws Exception {
 
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", Constants.HDFS_ADDRESS);
@@ -39,16 +35,22 @@ public class CheeseJob {
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
 
-        // Set output path in HDFS and check for existing files
-        String outputPathStr = "/user/elena.kikiova/output/cheese-filtered";
-        Path outputPath = new Path(outputPathStr);
-        FileOutputFormat.setOutputPath(job, outputPath);
-        outputPath.getFileSystem(conf).delete(outputPath, true);
+        String outputBasePath = "/user/elena.kikiova/output/";
+        Path mainOutputPath = new Path(outputBasePath);
+        FileOutputFormat.setOutputPath(job, mainOutputPath);
+        mainOutputPath.getFileSystem(conf).delete(mainOutputPath, true);
+
+        MultipleOutputs.addNamedOutput(job, "calculation", TextOutputFormat.class, Text.class, Text.class);
+        MultipleOutputs.addNamedOutput(job, "filteredCheese", TextOutputFormat.class, Text.class, Text.class);
 
         if (job.waitForCompletion(true)) {
-            return CheeseData.readCalculationResultFromHDFS(outputPathStr);
+            return new CheeseResult(
+                    CheeseData.readCalculationResultsFromHDFS(outputBasePath),
+                    CheeseData.readFilteredCheeseFromHDFS(outputBasePath)
+            );
         } else {
             throw new Exception("Hadoop job failed.");
         }
     }
+
 }

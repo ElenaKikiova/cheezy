@@ -92,7 +92,6 @@ public class CheeseData {
             String cheeseName = fields[11];
             String fatLevel = fields[12];
 
-
             // Return the Cheese
             return new Cheese(
                     cheeseId, manufacturerProvCode, manufacturingTypeEn,
@@ -107,36 +106,102 @@ public class CheeseData {
         }
     }
 
+    public static Object[] getCheeseTableData(Cheese cheese){
+        try {
+            return new Object[]{
+                    cheese.getCheeseId(),
+                    cheese.getCheeseName(),
+                    cheese.getManufacturerProvCode(),
+                    cheese.getManufacturingTypeEn(),
+                    cheese.getMoisturePercent(),
+                    cheese.getFlavourEn(),
+                    cheese.getCharacteristicsEn(),
+                    cheese.isOrganic() ? "Yes" : "No",
+                    cheese.getCategoryTypeEn(),
+                    cheese.getMilkTypeEn(),
+                    cheese.getMilkTreatmentTypeEn(),
+                    cheese.getRindTypeEn(),
+                    cheese.getFatLevel()
+            };
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static List<Cheese> getAllCheeses() {
         return allCheeses;
     }
-    public static String readCalculationResultFromHDFS(String outputPath) throws IOException {
-        List<Cheese> filteredCheeses = new ArrayList<>();
+
+    public static String readCalculationResultsFromHDFS(String outputPath) throws IOException {
+        String calculationResult = "";
         Configuration conf = new Configuration();
-        conf.set("fs.defaultFS", "hdfs://localhost:9000");
-        Path path = new Path(outputPath + "/part-r-00000");
+        conf.set("fs.defaultFS", Constants.HDFS_ADDRESS);
 
-        try (FileSystem fs = FileSystem.get(conf);
-             FSDataInputStream inputStream = fs.open(path);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        Path calculationPath = new Path(outputPath + "/calculation-r-00000");
 
-            String line;
-            String calculation = "";
-            String result = "";
-            while ((line = reader.readLine()) != null) {
-                // Split the line into key and value (tab-separated)
-                String[] keyValue = line.split("\t");
-                calculation = keyValue[0]; // The key
-                result = keyValue[1]; // The value
+        try (FileSystem fs = FileSystem.get(conf)) {
+
+            // Read the calculation output
+            try (FSDataInputStream calcStream = fs.open(calculationPath);
+                 BufferedReader calcReader = new BufferedReader(new InputStreamReader(calcStream))) {
+
+                String line;
+                String calculation = "";
+                String result = "";
+                while ((line = calcReader.readLine()) != null) {
+                    String[] keyValue = line.split("\t");
+                    calculation = keyValue[0]; // The key
+                    result = keyValue[1]; // The value
+                }
+
+                // Prepare the final calculation result
+                calculationResult = calculation + ": " + (result.isEmpty() ? "0%" : result);
+            } catch (Exception e) {
+                System.err.println("Error reading the calc file: " + e.getMessage());
+                e.printStackTrace();
             }
-            return calculation + ": " + (result.isEmpty() ? "0%" : result);
 
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             System.err.println(e);
+            e.printStackTrace();
         }
-        return "";
+
+        return calculationResult;
     }
 
+    public static List<Cheese> readFilteredCheeseFromHDFS(String outputPath) throws IOException {
+        List<Cheese> filteredCheeses = new ArrayList<>();
+        Configuration conf = new Configuration();
+        conf.set("fs.defaultFS", Constants.HDFS_ADDRESS);
+
+        Path filteredCheesePath = new Path(outputPath + "/filteredCheese-m-00000");
+
+        try (FileSystem fs = FileSystem.get(conf)) {
+
+            if (fs.exists(filteredCheesePath)) {
+                try (FSDataInputStream filterStream = fs.open(filteredCheesePath);
+                     BufferedReader filterReader = new BufferedReader(new InputStreamReader(filterStream))) {
+                    String line;
+                    while ((line = filterReader.readLine()) != null) {
+                        String[] keyValue = line.split("\t");
+                        String value = keyValue[1];
+                        Cheese cheese = CheeseData.parseCheese(value);
+                        filteredCheeses.add(cheese);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error reading the filtered cheese file: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("Filtered cheese file does not exist.");
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error" + e);
+            e.printStackTrace();
+        }
+
+        return filteredCheeses;
+    }
 
 }
