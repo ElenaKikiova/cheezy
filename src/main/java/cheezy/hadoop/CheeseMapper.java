@@ -43,7 +43,7 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         // Apply filters
         boolean matchesProvince = equals(cheese.getManufacturerProvCode(), filterProvince);
         boolean matchesCategory = equals(cheese.getCategoryTypeEn(), filterCategory);
-        boolean matchesMilkType = equals(cheese.getMilkTypeEn(), filterMilkType);
+        boolean matchesMilkType = cheese.getMilkTypeEn() != null ? cheese.getMilkTypeEn().toUpperCase().contains(filterMilkType.toUpperCase()) : false;
 
         if (matchesProvince && matchesCategory && matchesMilkType) {
             context.write(new Text("calculation"), new Text(cheese.getMoisturePercent() + "," + cheese.isOrganic()));

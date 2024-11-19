@@ -10,25 +10,31 @@ public class Filters extends JPanel {
 
     private final JComboBox<String> manufacturerProvCodeDropdown;
     private final JComboBox<String> categoryTypeDropdown;
-    private final JComboBox<String> milkTypeDropdown;
+    private final JTextArea milkTypeInput;
     private final JComboBox<String> calculationTypeDropdown;
     private final JButton filterButton;
 
     public Filters() {
         setLayout(new GridLayout(5, 2, 10, 10));
 
+        // ManufacturerProvCode filter
         add(new JLabel("Select Manufacturer Province Code:"));
         manufacturerProvCodeDropdown = new JComboBox<>(Constants.MANUFACTURER_PROV_CODES);
         add(manufacturerProvCodeDropdown);
 
+        // CategoryTypeEn filter
         add(new JLabel("Select Cheese Category:"));
         categoryTypeDropdown = new JComboBox<>(Constants.CATEGORY_TYPES);
+        // Add more categories
         add(categoryTypeDropdown);
 
+        // MilkTypeEn filter
         add(new JLabel("Select Milk Type:"));
-        milkTypeDropdown = new JComboBox<>(Constants.MILK_TYPES);
-        add(milkTypeDropdown);
+        milkTypeInput = new JTextArea();
+        // Add more milk types
+        add(milkTypeInput);
 
+        // Calculation Type filter
         add(new JLabel("Select Calculation Type:"));
         calculationTypeDropdown = new JComboBox<>(Constants.CALCULATION_TYPES);
         add(calculationTypeDropdown);
@@ -52,7 +58,7 @@ public class Filters extends JPanel {
     }
 
     public String getSelectedMilkType() {
-        return (String) milkTypeDropdown.getSelectedItem();
+        return milkTypeInput.getText();
     }
 
     public String getSelectedCalculation() {
