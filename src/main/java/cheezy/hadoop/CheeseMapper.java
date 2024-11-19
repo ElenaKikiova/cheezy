@@ -27,10 +27,9 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         multipleOutputs = new MultipleOutputs<>(context);
     }
 
-    protected boolean equals(String value1, String value2){
-        if(Objects.equals(value2, "All")) return true;
-        if(value1 == null || value2 == null || value1.isEmpty() || value2.isEmpty()) return false;
-        else return value1.equals(value2);
+    protected boolean contains(String value1, String value2){
+        if(Objects.equals(value2, null)) return true;
+        else return value1.toUpperCase().contains(value2.toUpperCase());
     }
 
     @Override
@@ -41,9 +40,9 @@ public class CheeseMapper extends Mapper<Object, Text, Text, Text> {
         Cheese cheese = CheeseData.parseCheese(line);
 
         // Apply filters
-        boolean matchesProvince = equals(cheese.getManufacturerProvCode(), filterProvince);
-        boolean matchesCategory = equals(cheese.getCategoryTypeEn(), filterCategory);
-        boolean matchesMilkType = cheese.getMilkTypeEn() != null ? cheese.getMilkTypeEn().toUpperCase().contains(filterMilkType.toUpperCase()) : false;
+        boolean matchesProvince = cheese.getManufacturerProvCode() != null ? contains(cheese.getManufacturerProvCode(), filterProvince) : false;
+        boolean matchesCategory = cheese.getCategoryTypeEn() != null ? contains(cheese.getCategoryTypeEn(), filterCategory) : false;
+        boolean matchesMilkType = cheese.getMilkTypeEn() != null ? contains(cheese.getMilkTypeEn(), filterMilkType) : false;
 
         if (matchesProvince && matchesCategory && matchesMilkType) {
             context.write(new Text("calculation"), new Text(cheese.getMoisturePercent() + "," + cheese.isOrganic()));

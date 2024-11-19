@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 
 public class Filters extends JPanel {
 
-    private final JComboBox<String> manufacturerProvCodeDropdown;
-    private final JComboBox<String> categoryTypeDropdown;
-    private final JTextArea milkTypeInput;
+    private final JTextField manufacturerProvCodeInput;
+    private final JTextField categoryTypeInpput;
+    private final JTextField milkTypeInput;
     private final JComboBox<String> calculationTypeDropdown;
     private final JButton filterButton;
 
@@ -19,18 +19,18 @@ public class Filters extends JPanel {
 
         // ManufacturerProvCode filter
         add(new JLabel("Select Manufacturer Province Code:"));
-        manufacturerProvCodeDropdown = new JComboBox<>(Constants.MANUFACTURER_PROV_CODES);
-        add(manufacturerProvCodeDropdown);
+        manufacturerProvCodeInput = new JTextField();
+        add(manufacturerProvCodeInput);
 
         // CategoryTypeEn filter
         add(new JLabel("Select Cheese Category:"));
-        categoryTypeDropdown = new JComboBox<>(Constants.CATEGORY_TYPES);
+        categoryTypeInpput = new JTextField();
         // Add more categories
-        add(categoryTypeDropdown);
+        add(categoryTypeInpput);
 
         // MilkTypeEn filter
         add(new JLabel("Select Milk Type:"));
-        milkTypeInput = new JTextArea();
+        milkTypeInput = new JTextField();
         // Add more milk types
         add(milkTypeInput);
 
@@ -50,11 +50,11 @@ public class Filters extends JPanel {
 
     // Methods to retrieve selected filter values
     public String getSelectedProvince() {
-        return (String) manufacturerProvCodeDropdown.getSelectedItem();
+        return manufacturerProvCodeInput.getText();
     }
 
     public String getSelectedCategory() {
-        return (String) categoryTypeDropdown.getSelectedItem();
+        return categoryTypeInpput.getText();
     }
 
     public String getSelectedMilkType() {
